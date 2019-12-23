@@ -1,4 +1,4 @@
-#slotmachine: gamble all day without leaving the house
+# slotmachine: gamble all day without leaving the house
 
 simple Python3 script guesses keys for the top P2PKH addresses.
 
