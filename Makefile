@@ -1,9 +1,14 @@
+SCRIPTS := $(wildcard *.py)
 run:	slotmachine.py
 	./$<
-lint:	slotmachine.py
+%.pylint: %.py
 	pylint3 $<
-test:	slotmachine.py
+%.test:	%.py
 	python3 -m doctest $<
-profile:
-	python3 -c "import cProfile, slotmachine; \
-	 cProfile.run('slotmachine.spin(None, None, 10)')"
+%.profile: %.py
+	python3 -c "import cProfile, $$*; \
+	 cProfile.run('$<')"
+tests:	$(SCRIPTS:.py=.test)
+profile: $(SCRIPTS:.py=.profile)
+lint:	$(SCRIPTS:.py=.pylint)
+check: tests lint profile

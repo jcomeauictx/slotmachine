@@ -10,7 +10,7 @@ if you find a winner you can import the privkey into your wallet
 #pylint: disable=multiple-imports
 from __future__ import print_function
 import sys, hashlib, logging, secrets
-import ecdsa
+import base58, ecdsa
 logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
 
 def spin(secret=None, richlist=None, maxreps=None):
@@ -78,7 +78,7 @@ def wifkey(key, prefix=b'\x80'):
     '''
     bytestring = prefix + key
     checksum = sha256(sha256(bytestring))[:4]
-    return base58encode(bytestring + checksum).decode('ascii')
+    return base58.encode(bytestring + checksum).decode('ascii')
 
 def wifaddress(publickey):
     '''
@@ -94,34 +94,11 @@ def sha256(data):
     '''
     return hashlib.sha256(data).digest()
 
-def base58encode(bytestring):
-    r'''
-    simple base58 encoder
-
-    based on //github.com/jgarzik/python-bitcoinlib/blob/master/
-     bitcoin/base58.py
-
-    test cases from https://tools.ietf.org/html/draft-msporny-base58-01
-
-    >>> base58encode(b'Hello World!')
-    b'2NEpo7TZRRrLZSi2U'
-
-    >>> base58encode(b'The quick brown fox jumps over the lazy dog.')
-    b'USm3fpXnKG5EUBx2ndxBDMPVciP5hGey2Jh4NDv6gmeo1LkMeiKrLJUUBk6Z'
-
-    the following test vector is modified from the erroneous original:
-
-    >>> base58encode(b'\x00\x00\x28\x7f\xb4\xcd')
-    b'11233QC4'
+def profile():
     '''
-    digits = b'123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-    padding = digits[0:1] * (len(bytestring) - len(bytestring.lstrip(b'\0')))
-    number = int.from_bytes(bytestring, 'big')
-    encoded = b''
-    while number:
-        number, remainder = divmod(number, 58)
-        encoded += digits[remainder:remainder + 1]
-    return padding + encoded[::-1]
+    for running profiler with `make profile`
+    '''
+    spin(None, None, 10)
 
 if __name__ == '__main__':
     print(spin(*sys.argv[1:]))
