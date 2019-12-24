@@ -8,8 +8,7 @@ as your own.
 chances are infinitesimal, but if you win you win big: most of these wallets
 have many millions of dollars in them.
 
-requires ecdsa and base58. as root, use `pip3 install base58` and
-`pip3 install ecdsa`, or on Debian and its derivatives you can
-`apt install python3-base58 python3-ecdsa`.
+requires ecdsa. as root, use `pip3 install ecdsa`, or on Debian and its
+derivatives you can `apt install python3-ecdsa`.
 
 to run, simply `make`, `./slotmachine.py`, or `python3 slotmachine.py`.

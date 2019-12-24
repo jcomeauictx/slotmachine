@@ -10,8 +10,10 @@ if you find a winner you can import the privkey into your wallet
 #pylint: disable=multiple-imports
 from __future__ import print_function
 import sys, hashlib, logging, secrets
-import base58, ecdsa
+import ecdsa
 logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
+
+BASE58_DIGITS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
 def spin(secret=None, richlist=None, maxreps=None):
     '''
@@ -76,7 +78,7 @@ def wifkey(key, prefix=b'\x80'):
     '''
     bytestring = prefix + key
     checksum = sha256(sha256(bytestring))[:4]
-    return base58.b58encode(bytestring + checksum).decode('ascii')
+    return base58encode(bytestring + checksum).decode('ascii')
 
 def wifaddress(publickey):
     '''
@@ -91,6 +93,23 @@ def sha256(data):
     sha256 hash of data
     '''
     return hashlib.sha256(data).digest()
+
+def base58encode(bytestring):
+    '''
+    simple base58 encoder
+
+    based on //github.com/jgarzik/python-bitcoinlib/blob/master/
+     bitcoin/base58.py
+    '''
+    encoded = ''
+    cleaned = bytestring.lstrip(b'\0')
+    string = bytestring.hex()
+    number = int(string, 16)
+    while number:
+        number, remainder = divmod(number, 58)
+        encoded += BASE58_DIGITS[remainder]
+    padding = BASE58_DIGITS[0] * (len(bytestring) - len(cleaned))
+    return (padding + encoded[::-1]).encode()
 
 if __name__ == '__main__':
     print(spin(*sys.argv[1:]))
