@@ -39,7 +39,7 @@ def spin(secret=None, richlist=None, maxreps=None):
                 else:
                     logging.debug('line: %s, data: %s', line, data)
                     richlist.append(data[0])
-                if len(richlist) > 1000000:  # memory usage
+                if len(richlist) == 1000000:  # memory usage
                     logging.info('cutting off at %d addresses', len(richlist))
                     break
             logging.info('done building richlist')
