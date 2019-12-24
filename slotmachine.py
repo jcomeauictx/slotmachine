@@ -103,8 +103,7 @@ def base58encode(bytestring):
     '''
     encoded = ''
     cleaned = bytestring.lstrip(b'\0')
-    string = bytestring.hex()
-    number = int(string, 16)
+    number = int.from_bytes(bytestring, 'big')
     while number:
         number, remainder = divmod(number, 58)
         encoded += BASE58_DIGITS[remainder]
