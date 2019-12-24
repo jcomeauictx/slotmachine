@@ -10,7 +10,7 @@ if you find a winner you can import the privkey into your wallet
 #pylint: disable=multiple-imports
 from __future__ import print_function
 import sys, hashlib, logging, secrets
-import base58, ecdsa
+import ecdsa, base58
 logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
 
 def spin(secret=None, richlist=None, maxreps=None):
