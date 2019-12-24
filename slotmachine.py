@@ -13,13 +13,11 @@ import sys, hashlib, logging, secrets
 import ecdsa
 logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
 
-BASE58_DIGITS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-
 def spin(secret=None, richlist=None, maxreps=None):
     '''
     try and guess private keys for some of the richest BTC addresses
 
-    >>> spin('satoshi nakamoto', ['1Q7f2rL2irjpvsKVys5W2cmKJYss82rNCy'])
+    >>> spin('satoshi nakamoto', ['1Q7f2rL2irjpvsKVys5W2cmKJYss82rNCy'], 1)
     JACKPOT!
     seed: satoshi nakamoto
     secret: aa2d3c4a4ae6559e9f13f093cc6e32459c5249da723de810651b4b54373385e2
@@ -95,20 +93,33 @@ def sha256(data):
     return hashlib.sha256(data).digest()
 
 def base58encode(bytestring):
-    '''
+    r'''
     simple base58 encoder
 
     based on //github.com/jgarzik/python-bitcoinlib/blob/master/
      bitcoin/base58.py
+
+    test cases from https://tools.ietf.org/html/draft-msporny-base58-01
+
+    >>> base58encode(b'Hello World!')
+    b'2NEpo7TZRRrLZSi2U'
+    
+    >>> base58encode(b'The quick brown fox jumps over the lazy dog.')
+    b'USm3fpXnKG5EUBx2ndxBDMPVciP5hGey2Jh4NDv6gmeo1LkMeiKrLJUUBk6Z'
+
+    the following test vector is modified from the erroneous original:
+
+    >>> base58encode(b'\x00\x00\x28\x7f\xb4\xcd')
+    b'11233QC4'
     '''
-    encoded = ''
-    cleaned = bytestring.lstrip(b'\0')
+    digits = b'123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+    padding = digits[0:1] * (len(bytestring) - len(bytestring.lstrip(b'\0')))
     number = int.from_bytes(bytestring, 'big')
+    encoded = b''
     while number:
         number, remainder = divmod(number, 58)
-        encoded += BASE58_DIGITS[remainder]
-    padding = BASE58_DIGITS[0] * (len(bytestring) - len(cleaned))
-    return (padding + encoded[::-1]).encode()
+        encoded += digits[remainder:remainder + 1]
+    return padding + encoded[::-1]
 
 if __name__ == '__main__':
     print(spin(*sys.argv[1:]))
