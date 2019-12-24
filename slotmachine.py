@@ -103,7 +103,7 @@ def base58encode(bytestring):
 
     >>> base58encode(b'Hello World!')
     b'2NEpo7TZRRrLZSi2U'
-    
+
     >>> base58encode(b'The quick brown fox jumps over the lazy dog.')
     b'USm3fpXnKG5EUBx2ndxBDMPVciP5hGey2Jh4NDv6gmeo1LkMeiKrLJUUBk6Z'
 
