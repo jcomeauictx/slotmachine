@@ -9,9 +9,11 @@ if you find a winner you can import the privkey into your wallet
 '''
 #pylint: disable=multiple-imports
 from __future__ import print_function
-import sys, hashlib, logging, secrets
+import sys, os, hashlib, logging, secrets
 import ecdsa, base58
 logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
+
+RICHLIST = os.getenv('RICHLIST_TXT') or 'richlist.txt'
 
 def spin(secret=None, richlist=None, maxreps=None):
     '''
@@ -19,16 +21,27 @@ def spin(secret=None, richlist=None, maxreps=None):
 
     >>> spin('satoshi nakamoto', ['1Q7f2rL2irjpvsKVys5W2cmKJYss82rNCy'], 1)
     JACKPOT!
-    seed: satoshi nakamoto
+    seed: 'satoshi nakamoto'
     secret: aa2d3c4a4ae6559e9f13f093cc6e32459c5249da723de810651b4b54373385e2
     private key: 5K7EWwEuJu9wPi4q7HmWQ7xgv8GxZ2KqkFbjYMGvTCXmY22oCbr
     address: 1Q7f2rL2irjpvsKVys5W2cmKJYss82rNCy
     reps: 1
     '''
     if not richlist:
-        with open('richlist.txt') as infile:
-            richlist = infile.read().split()
-    seed = secret
+        with open(RICHLIST) as infile:
+            richlist = []
+            for line in infile:
+                data = line.split()
+                if len(data) > 1 and int(data[1]) < 10000000:  # satoshis
+                    logging.info('cutting off at value %s', data[1])
+                    break
+                else:
+                    logging.debug('line: %s, data: %s', line, data)
+                    richlist.append(data[0])
+                if len(richlist) > 1000000:  # memory usage
+                    logging.info('cutting off at %d addresses', len(richlist))
+                    break
+    seed = secret or None  # specifying blank on command line means random seed
     try:
         maxreps = int(maxreps)  # will fail if None
     except TypeError:
@@ -56,7 +69,7 @@ def spin(secret=None, richlist=None, maxreps=None):
         reps += 1
     if address in richlist:
         print('JACKPOT!')
-        print('seed: %s' % seed)
+        print('seed: %r' % seed)
         print('secret: %s' % old_secret.hex())
         print('private key: %s' % private)
         print('address: %s' % address)
