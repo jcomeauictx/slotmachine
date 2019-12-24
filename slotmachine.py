@@ -13,7 +13,7 @@ import sys, hashlib, logging, secrets
 import base58, ecdsa
 logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
 
-def spin(secret=None, richlist=None):
+def spin(secret=None, richlist=None, maxreps=None):
     '''
     try and guess private keys for some of the richest BTC addresses
 
@@ -30,6 +30,10 @@ def spin(secret=None, richlist=None):
             richlist = infile.read().split()
     seed = secret
     try:
+        maxreps = int(maxreps)  # will fail if None
+    except TypeError:
+        maxreps = sys.maxsize  # continue indefinitely
+    try:
         if len(secret) != 64:
             raise TypeError('not a sha256 hash')
         secret = bytes.fromhex(secret)
@@ -42,18 +46,19 @@ def spin(secret=None, richlist=None):
             logging.info('creating random secret instead')
             secret = secrets.token_bytes(32)
     old_secret, private, address, reps = None, None, None, 0
-    while address not in richlist:
+    while address not in richlist and reps < maxreps:
         print('secret: %s' % secret.hex(), file=sys.stderr)
         private = wifkey(secret)
         address = wifaddress(public_key(secret))
         old_secret, secret = secret, sha256(secret)
         reps += 1
-    print('JACKPOT!')
-    print('seed: %s' % seed)
-    print('secret: %s' % old_secret.hex())
-    print('private key: %s' % private)
-    print('address: %s' % address)
-    print('reps: %s' % reps)
+    if address in richlist:
+        print('JACKPOT!')
+        print('seed: %s' % seed)
+        print('secret: %s' % old_secret.hex())
+        print('private key: %s' % private)
+        print('address: %s' % address)
+        print('reps: %s' % reps)
 
 def public_key(secret):
     '''
