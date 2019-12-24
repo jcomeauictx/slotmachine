@@ -17,9 +17,8 @@ the following test vector is modified from the erroneous original:
 >>> encode(0x0000287fb4cd.to_bytes(6, 'big'))
 b'11233QC4'
 
-# decoder isn't yet functional, comment this one out
->>> decode(encode(0x0000287fb4cd.to_bytes(6, 'big')))
-0x0000287fb4cd
+>>> '0x' + decode(encode(0x0000287fb4cd.to_bytes(6, 'big'))).hex()
+'0x0000287fb4cd'
 '''
 import logging
 logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
@@ -46,23 +45,20 @@ def decode(bytestring):
     '''
     base58 decoder
     '''
-    raw_bytes = bytearray(b'')
-    input_bytes = [DIGITS.index(c) for c in bytestring]
+    clean = bytestring.lstrip(DIGITS[0:1])
+    padding = b'\0' * (len(bytestring) - len(clean))
+    number = 0
     try:
-        #pylint: disable=consider-using-enumerate
-        for index, carry in enumerate(input_bytes):
-            for offset in range(index + 1, len(input_bytes)):
-                if not carry:
-                    break
-                else:
-                    carry += input_bytes[offset] * 58
-                    carry, byte = divmod(carry, 256)
-                    raw_bytes.append(byte)
-                    logging.debug('index: %s, offset: %s, carry: %s, byte: %r',
-                                  index, offset, carry, byte)
+        for byte in clean:
+            number = (number * 58) + DIGITS.index(byte)
     except IndexError:
-        raise ValueError('%r is not a base58 digit' % bytestring[0])
-    return bytes(raw_bytes)
+        raise ValueError('%r is not a base58 digit' % byte)
+    # now convert to bytestring
+    output = bytearray()
+    while number:
+        number, byte = divmod(number, 256)
+        output.insert(0, byte)
+    return padding + output
 
 def profile():
     '''
