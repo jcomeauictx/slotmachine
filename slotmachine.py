@@ -32,10 +32,12 @@ def spin(secret=None, richlist=None, maxreps=None):
     try:
         maxreps = int(maxreps)  # will fail if None
     except TypeError:
+        logging.warning('cannot convert %r to integer', maxreps)
+        logging.info('program will run until exited with ^C')
         maxreps = sys.maxsize  # continue indefinitely
     try:
         if len(secret) != 64:
-            raise TypeError('not a sha256 hash')
+            raise TypeError('Not a sha256 hash')
         secret = bytes.fromhex(secret)
     except TypeError:
         logging.warning('converting "%s" to sha256 hexdigest first', secret)
