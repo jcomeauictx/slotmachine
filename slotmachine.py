@@ -75,7 +75,7 @@ def wifkey(key, prefix=b'\x80'):
     prefix b'\x80' is for private key, '\x00' for public key
     '''
     bytestring = prefix + key
-    checksum = sha256d(bytestring)[:4]
+    checksum = sha256(sha256(bytestring))[:4]
     return base58.b58encode(bytestring + checksum).decode('ascii')
 
 def wifaddress(publickey):
@@ -91,12 +91,6 @@ def sha256(data):
     sha256 hash of data
     '''
     return hashlib.sha256(data).digest()
-
-def sha256d(data):
-    '''
-    double sha256 hash of data
-    '''
-    return sha256(sha256(data))
 
 if __name__ == '__main__':
     print(spin(*sys.argv[1:]))
