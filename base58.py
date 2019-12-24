@@ -18,9 +18,12 @@ the following test vector is modified from the erroneous original:
 b'11233QC4'
 
 # decoder isn't yet functional, comment this one out
-#>>> decode(encode(0x0000287fb4cd.to_bytes(6, 'big')))
+>>> decode(encode(0x0000287fb4cd.to_bytes(6, 'big')))
 0x0000287fb4cd
 '''
+import logging
+logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
+
 DIGITS = b'123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
 def encode(bytestring):
@@ -44,17 +47,19 @@ def decode(bytestring):
     base58 decoder
     '''
     raw_bytes = bytearray(b'')
+    input_bytes = [DIGITS.index(c) for c in bytestring]
     try:
         #pylint: disable=consider-using-enumerate
-        for index in range(len(bytestring)):
-            carry = DIGITS.index(bytestring[index])
-            for offset in range(index + 1, len(bytestring)):
+        for index, carry in enumerate(input_bytes):
+            for offset in range(index + 1, len(input_bytes)):
                 if not carry:
                     break
                 else:
-                    carry += DIGITS.index(bytestring[offset]) * 58
+                    carry += input_bytes[offset] * 58
                     carry, byte = divmod(carry, 256)
                     raw_bytes.append(byte)
+                    logging.debug('index: %s, offset: %s, carry: %s, byte: %r',
+                                  index, offset, carry, byte)
     except IndexError:
         raise ValueError('%r is not a base58 digit' % bytestring[0])
     return bytes(raw_bytes)
