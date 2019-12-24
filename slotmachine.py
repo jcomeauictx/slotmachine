@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -OO
 '''
 try and find keys for some of the richest Bitcoin wallets
 
@@ -30,6 +30,7 @@ def spin(secret=None, richlist=None, maxreps=None):
     if not richlist:
         with open(RICHLIST) as infile:
             richlist = []
+            logging.info('building richlist')
             for line in infile:
                 data = line.split()
                 if len(data) > 1 and int(data[1]) < 10000000:  # satoshis
@@ -41,6 +42,7 @@ def spin(secret=None, richlist=None, maxreps=None):
                 if len(richlist) > 1000000:  # memory usage
                     logging.info('cutting off at %d addresses', len(richlist))
                     break
+            logging.info('done building richlist')
     seed = secret or None  # specifying blank on command line means random seed
     try:
         maxreps = int(maxreps)  # will fail if None
