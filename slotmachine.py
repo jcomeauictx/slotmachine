@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
 
 RICHLIST = os.getenv('RICHLIST_TXT') or 'richlist.txt'
 
-def spin(secret=None, richlist=None, maxreps=None):
+def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
     '''
     try and guess private keys for some of the richest BTC addresses
 
@@ -69,7 +69,7 @@ def spin(secret=None, richlist=None, maxreps=None):
         address = wifaddress(public_key(secret))
         old_secret, secret = secret, sha256(secret)
         reps += 1
-    if address in richlist:
+    if address in richlist or fake_success:
         print('JACKPOT!')
         print('seed: %r' % seed)
         print('secret: %s' % old_secret.hex())
