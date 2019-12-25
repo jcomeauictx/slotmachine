@@ -12,3 +12,8 @@ def token_bytes(number):
     '''
     generator = random.SystemRandom()
     return generator.getrandbits(number * 8).to_bytes(number, 'big')
+
+def profile():
+    '''
+    for `make profile`
+    '''
