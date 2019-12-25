@@ -26,4 +26,6 @@ $(RICHLIST_PATH): .FORCE
 	cd $(@D) && wget -c -N $(RICHLIST_URL) || true
 $(RICHLIST_TXT): $(RICHLIST_PATH)
 	zcat $< | awk '$$1 ~ /^1/ && $$2 ~ /......*/ {print $$1 " " $$2}' > $@
+%/Downloads: %
+	mkdir $@
 .FORCE:
