@@ -17,8 +17,9 @@ to run, simply `make`, `./slotmachine.py`, or `python3 slotmachine.py`.
 chances are infinitesimal, but if you win you win big: most of these wallets
 have many millions of dollars in them, and some have billions.
 
-note: the chances that you guess the same private key as the original
-address holder has are also infinitesimal: about 1 in 2^96 (a huge number:
+note: even if you guessed a key that generates the wallet address,
+the chances that you guessed the same private key as the original
+address holder are also infinitesimal: about 1 in 2^96 (a huge number:
 79228162514264337593543950336), but since the hash matches, and you can
 prove that, the coins are still counted as yours. note that **this is only
 true** for funds held in P2PKH (Pay to Public Key Hash) transactions. for
