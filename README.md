@@ -35,4 +35,6 @@ stuff it in your knapsack, shut up, and walk on nonchalantly.
 
 ## richlist.txt
 
-a better source of addresses may be <https://gz.blockchair.com/bitcoin/addresses/blockchair_bitcoin_addresses_latest.tsv.gz>, updated weekly.
+a better source of addresses may be <https://gz.blockchair.com/bitcoin/addresses/blockchair_bitcoin_addresses_latest.tsv.gz>, updated weekly. you can use
+this list automatically by using `make slots` instead of just `make`. it takes
+longer to load, however.
