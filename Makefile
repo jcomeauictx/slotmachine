@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 RICHLIST := blockchair_bitcoin_addresses_latest.tsv.gz
 RICHLIST_URL := https://gz.blockchair.com/bitcoin/addresses/$(RICHLIST)
 RICHLIST_PATH := $(shell echo ~/Downloads)/$(RICHLIST)
@@ -30,4 +31,6 @@ $(RICHLIST_TXT): $(RICHLIST_PATH)
 	mkdir $@
 python:  # run python3 with environment as set by Makefile
 	python3 -OO -i -c "from slotmachine import *"
+%.try:  # test a key for 1000 reps
+	try=$*; python3 -OO slotmachine.py "$${try//_/ }" "" 1000
 .FORCE:
