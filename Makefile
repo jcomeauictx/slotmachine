@@ -28,4 +28,6 @@ $(RICHLIST_TXT): $(RICHLIST_PATH)
 	zcat $< | awk '$$1 ~ /^1/ && $$2 ~ /......*/ {print $$1 " " $$2}' > $@
 %/Downloads: %
 	mkdir $@
+python:  # run python3 with environment as set by Makefile
+	python3 -OO -i -c "from slotmachine import *"
 .FORCE:
