@@ -20,7 +20,7 @@ address holder has are also infinitesimal: about 1 in 2^96 (a huge number:
 79228162514264337593543950336), but since the hash matches, and you can
 prove that, the coins are still counted as yours. note that **this is only
 true** for funds held in P2PKH (Pay to Public Key Hash) transactions. for
-P2PK (Pay to Public Key) transactions require a matching public key.
+P2PK (Pay to Public Key) transactions you instead need a matching public key.
 for reference, see [Chris Moore](https://twitter.com/dooglus)'s [comments on
 this Bitcoin question](https://bitcoin.stackexchange.com/questions/22/is-it-possible-to-brute-force-bitcoin-address-creation-in-order-to-steal-money).
 
