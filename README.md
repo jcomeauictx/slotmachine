@@ -5,15 +5,17 @@ simple Python3 script guesses keys for the top P2PKH addresses.
 if you win, you are now a co-owner of that wallet and can spend the coins
 as your own.
 
-## notes on odds
-
-chances are infinitesimal, but if you win you win big: most of these wallets
-have many millions of dollars in them, and some have billions.
+## quickstart
 
 requires ecdsa. as root, use `pip3 install ecdsa`, or on Debian and its
 derivatives you can `apt install python3-ecdsa`.
 
 to run, simply `make`, `./slotmachine.py`, or `python3 slotmachine.py`.
+
+## notes on odds
+
+chances are infinitesimal, but if you win you win big: most of these wallets
+have many millions of dollars in them, and some have billions.
 
 note: the chances that you guess the same private key as the original
 address holder has are also infinitesimal: about 1 in 2^96 (a huge number:
@@ -35,4 +37,6 @@ stuff it in your knapsack, shut up, and walk on nonchalantly.
 
 ## richlist.txt
 
-a better source of addresses may be <https://gz.blockchair.com/bitcoin/addresses/blockchair_bitcoin_addresses_latest.tsv.gz>, updated weekly.
+a better source of addresses may be <https://gz.blockchair.com/bitcoin/addresses/blockchair_bitcoin_addresses_latest.tsv.gz>, updated weekly. you can use
+this list automatically by using `make slots` instead of just `make`. it takes
+longer to load, however.
