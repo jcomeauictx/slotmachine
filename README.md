@@ -27,6 +27,12 @@ P2PK (Pay to Public Key) transactions you instead need a matching public key.
 for reference, see [Chris Moore](https://twitter.com/dooglus)'s [comments on
 this Bitcoin question](https://bitcoin.stackexchange.com/questions/22/is-it-possible-to-brute-force-bitcoin-address-creation-in-order-to-steal-money).
 
+put another way, you have one chance in 2^160, or 1 in
+1461501637330902918203684832716283019655932542976, of scoring any one of
+the wallet addresses, but only one chance in 2^256, or 1 in
+115792089237316195423570985008687907853269984665640564039457584007913129639936,
+of getting that address's original public/private key pair.
+
 ## legality
 
 although everyone participating in Bitcoin should know the risks, many
