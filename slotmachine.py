@@ -78,7 +78,10 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
         print('secret: %s' % hexlify(secret), file=sys.stderr)
         private = wifkey(secret)
         address = wifaddress(public_key(secret))
-        old_secret, secret = secret, sha256(secret)
+        old_secret = secret
+        # if we aren't starting from a chosen seed, randomize each new try
+        # otherwise keep deriving it from the seed
+        secret = secrets.token_bytes(32) if seed is None else sha256(secret)
         reps += 1
     if address in richlist or fake_success:
         print('JACKPOT!')
