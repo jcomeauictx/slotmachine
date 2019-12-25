@@ -14,12 +14,14 @@ try:
     import secrets
 except ImportError:  # Python3 before 3.6
     import monkeypatch_secrets as secrets
+import ecdsa, base58
 if hasattr(bytes, 'hex'):
-    hexlify = lambda bytesring: bytestring.hex()
+    #pylint: disable=invalid-name
+    hexlify = lambda bytestring: bytestring.hex()
 else:
     import binascii
+    #pylint: disable=invalid-name
     hexlify = lambda bytestring: binascii.hexlify(bytestring).decode()
-import ecdsa, base58
 logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
 
 RICHLIST = os.getenv('RICHLIST_TXT') or 'richlist.txt'
