@@ -9,7 +9,16 @@ if you find a winner you can import the privkey into your wallet
 '''
 #pylint: disable=multiple-imports
 from __future__ import print_function
-import sys, os, hashlib, logging, secrets
+import sys, os, hashlib, logging
+try:
+    import secrets
+except ImportError:  # Python3 before 3.6
+    import monkeypatch_secrets as secrets
+if hasattr(bytes, 'hex'):
+    hexlify = lambda bytesring: bytestring.hex()
+else:
+    import binascii
+    hexlify = lambda bytestring: binascii.hexlify(bytestring).decode()
 import ecdsa, base58
 logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
 
@@ -64,7 +73,7 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
             secret = secrets.token_bytes(32)
     old_secret, private, address, reps = None, None, None, 0
     while address not in richlist and reps < maxreps:
-        print('secret: %s' % secret.hex(), file=sys.stderr)
+        print('secret: %s' % hexlify(secret), file=sys.stderr)
         private = wifkey(secret)
         address = wifaddress(public_key(secret))
         old_secret, secret = secret, sha256(secret)
@@ -72,7 +81,7 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
     if address in richlist or fake_success:
         print('JACKPOT!')
         print('seed: %r' % seed)
-        print('secret: %s' % old_secret.hex())
+        print('secret: %s' % hexlify(old_secret))
         print('private key: %s' % private)
         print('address: %s' % address)
         print('reps: %s' % reps)

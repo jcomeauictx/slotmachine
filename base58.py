@@ -17,8 +17,8 @@ the following test vector is modified from the erroneous original:
 >>> encode(0x0000287fb4cd.to_bytes(6, 'big'))
 b'11233QC4'
 
->>> '0x' + decode(encode(0x0000287fb4cd.to_bytes(6, 'big'))).hex()
-'0x0000287fb4cd'
+>>> decode(encode(0x0000287fb4cd.to_bytes(6, 'big')))
+b'\x00\x00(\x7f\xb4\xcd'
 '''
 import logging
 logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
