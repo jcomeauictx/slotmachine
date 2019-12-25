@@ -14,7 +14,7 @@ slots: slotmachine.py $(RICHLIST_TXT)
 %.test:	%.py
 	python3 -m doctest $<
 %.profile: %.py
-	RICHLIST_TXT= python3 -c "import cProfile, $*; \
+	RICHLIST_TXT= python3 -OO -c "import cProfile, $*; \
 	 cProfile.run('$@()')"
 tests:	$(SCRIPTS:.py=.test)
 profile: $(SCRIPTS:.py=.profile)
