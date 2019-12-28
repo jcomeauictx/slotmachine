@@ -4,6 +4,8 @@ RICHLIST_URL := https://gz.blockchair.com/bitcoin/addresses/$(RICHLIST)
 RICHLIST_PATH := $(shell echo ~/Downloads)/$(RICHLIST)
 RICHLIST_TXT ?= $(RICHLIST_PATH:.tsv.gz=.txt)
 SCRIPTS := $(wildcard *.py)
+# script uses about 100MB per million addresses, set limit accordingly
+MAX_ADDRESSES ?= 4000000
 export
 run:
 	$(MAKE) RICHLIST_TXT= slots

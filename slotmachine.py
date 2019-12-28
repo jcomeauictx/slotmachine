@@ -25,6 +25,7 @@ else:
 logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
 
 RICHLIST = os.getenv('RICHLIST_TXT') or 'richlist.txt'
+MAX_ADDRESSES = int(os.getenv('MAX_ADDRESSES')) or 4000000
 
 def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
     '''
@@ -50,7 +51,7 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
                 else:
                     logging.debug('line: %s, data: %s', line, data)
                     richlist.append(data[0])
-                if len(richlist) == 4000000:  # watch memory usage
+                if len(richlist) == MAX_ADDRESSES:  # watch memory usage
                     logging.info('cutting off at %d addresses', len(richlist))
                     break
             logging.info('done building richlist')
