@@ -44,13 +44,13 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
             logging.info('building richlist')
             for line in infile:
                 data = line.split()
-                if len(data) > 1 and int(data[1]) < 10000000:  # satoshis
+                if len(data) > 1 and int(data[1]) < 1000000:  # satoshis
                     logging.info('cutting off at value %s', data[1])
                     break
                 else:
                     logging.debug('line: %s, data: %s', line, data)
                     richlist.append(data[0])
-                if len(richlist) == 1000000:  # memory usage
+                if len(richlist) == 4000000:  # watch memory usage
                     logging.info('cutting off at %d addresses', len(richlist))
                     break
             logging.info('done building richlist')

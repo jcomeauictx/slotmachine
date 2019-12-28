@@ -25,8 +25,10 @@ env:
 	env
 $(RICHLIST_PATH): .FORCE
 	cd $(@D) && wget -c -N $(RICHLIST_URL) || true
+recreate: $(RICHLIST_PATH)
+	touch $<
 $(RICHLIST_TXT): $(RICHLIST_PATH)
-	zcat $< | awk '$$1 ~ /^1/ && $$2 ~ /......*/ {print $$1 " " $$2}' > $@
+	zcat $< | awk '$$1 ~ /^1/ && $$2 ~ /..*/ {print $$1 " " $$2}' > $@
 %/Downloads: %
 	mkdir $@
 python:  # run python3 with environment as set by Makefile
