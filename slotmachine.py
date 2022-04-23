@@ -25,7 +25,7 @@ else:
 logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
 
 RICHLIST = os.getenv('RICHLIST_TXT') or 'richlist.txt'
-MAX_ADDRESSES = int(os.getenv('MAX_ADDRESSES')) or 4000000
+MAX_ADDRESSES = int(os.getenv('MAX_ADDRESSES', '4000000')) or 4000000
 
 def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
     '''
