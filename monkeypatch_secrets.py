@@ -20,12 +20,7 @@ def python2_token_bytes(number):
     return random bytestring
     '''
     token = GENERATOR.getrandbits(number * 8)
-    try:
-        return unhexlify('%0*x' % (number * 2, token))
-    except TypeError:
-        raise ValueError(
-            'Failed to unhexlify %d byte "%0*x"' % (number, number, token)
-        )
+    return unhexlify('%0*x' % (number * 2, token))
 
 def profile():
     '''

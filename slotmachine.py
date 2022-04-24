@@ -10,13 +10,7 @@ if you find a winner you can import the privkey into your wallet
 #pylint: disable=multiple-imports
 from __future__ import print_function
 import sys, os, hashlib, logging
-import ecdsa
-# base58 messes with logging format, so set it first
-logging.basicConfig(
-    level=logging.DEBUG if __debug__ else logging.INFO,
-    format='%(levelname)s:%(message)s'
-)
-import base58  # pylint: disable=wrong-import-position
+import ecdsa, base58
 try:
     import secrets
 except ImportError:  # Python3 before 3.6
@@ -28,6 +22,11 @@ else:
     import binascii
     #pylint: disable=invalid-name
     hexlify = lambda bytestring: binascii.hexlify(bytestring).decode()
+
+logging.basicConfig(
+    level=logging.DEBUG if __debug__ else logging.INFO,
+    format='%(levelname)s:%(message)s'
+)
 
 RICHLIST = os.getenv('RICHLIST_TXT') or 'richlist.txt'
 MAX_ADDRESSES = int(os.getenv('MAX_ADDRESSES', '4000000')) or 4000000
