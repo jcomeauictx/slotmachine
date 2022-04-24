@@ -53,12 +53,13 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
                     logging.info('cutting off at value %s', data[1])
                     break
                 else:
-                    logging.debug('line: %s, data: %s', line, data)
+                    logging.debug('data: %s', data)
                     richlist.append(data[0])
                 if len(richlist) == MAX_ADDRESSES:  # watch memory usage
                     logging.info('cutting off at %d addresses', len(richlist))
                     break
             logging.info('done building richlist, %d addresses', len(richlist))
+        richlist = dict.fromkeys(richlist)  # for faster lookups
     seed = secret or None  # specifying blank on command line means random seed
     try:
         maxreps = int(maxreps)  # will fail if None
