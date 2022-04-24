@@ -10,11 +10,17 @@ if you find a winner you can import the privkey into your wallet
 #pylint: disable=multiple-imports
 from __future__ import print_function
 import sys, os, hashlib, logging
+import ecdsa
+# base58 messes with logging format, so set it first
+logging.basicConfig(
+    level=logging.DEBUG if __debug__ else logging.INFO,
+    format='%(levelname)s:%(message)s'
+)
+import base58  # pylint: disable=wrong-import-position
 try:
     import secrets
 except ImportError:  # Python3 before 3.6
     import monkeypatch_secrets as secrets
-import ecdsa, base58
 if hasattr(bytes, 'hex'):
     #pylint: disable=invalid-name
     hexlify = lambda bytestring: bytestring.hex()
@@ -22,7 +28,6 @@ else:
     import binascii
     #pylint: disable=invalid-name
     hexlify = lambda bytestring: binascii.hexlify(bytestring).decode()
-logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
 
 RICHLIST = os.getenv('RICHLIST_TXT') or 'richlist.txt'
 MAX_ADDRESSES = int(os.getenv('MAX_ADDRESSES', '4000000')) or 4000000
@@ -76,7 +81,7 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
             secret = secrets.token_bytes(32)
     old_secret, private, address, reps = None, None, None, 0
     while address not in richlist and reps < maxreps:
-        print('secret: %s' % hexlify(secret), file=sys.stderr)
+        logging.debug('secret: %s', hexlify(secret))
         private = wifkey(secret)
         address = wifaddress(public_key(secret))
         old_secret = secret
