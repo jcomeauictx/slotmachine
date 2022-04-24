@@ -20,8 +20,8 @@ b'11233QC4'
 >>> decode(encode(b'\x00\x00\x28\x7f\xb4\xcd'))
 b'\x00\x00(\x7f\xb4\xcd'
 '''
-import logging
-logging.basicConfig(level=logging.DEBUG if __debug__ else logging.INFO)
+
+from binascii import hexlify
 
 DIGITS = b'123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
@@ -34,7 +34,10 @@ def encode(bytestring):
     given variable names.
     '''
     padding = DIGITS[0:1] * (len(bytestring) - len(bytestring.lstrip(b'\0')))
-    number = int.from_bytes(bytestring, 'big')
+    try:
+        number = int.from_bytes(bytestring, 'big')
+    except AttributeError:
+        number = int(hexlify(bytestring), 16)
     encoded = b''
     while number:
         number, remainder = divmod(number, 58)
@@ -58,7 +61,7 @@ def decode(bytestring):
     while number:
         number, byte = divmod(number, 256)
         output.insert(0, byte)
-    return padding + output
+    return bytes(padding + output)
 
 def profile():
     '''
