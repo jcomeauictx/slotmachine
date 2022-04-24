@@ -42,7 +42,7 @@ def encode(bytestring):
     while number:
         number, remainder = divmod(number, 58)
         encoded += DIGITS[remainder:remainder + 1]
-    return padding + encoded[::-1]
+    return bytes(padding + encoded[::-1])
 
 def decode(bytestring):
     '''
@@ -68,3 +68,18 @@ def profile():
     for use with `make base58.profile`
     '''
     encode(b'\x00\x00\x28\x7f\xb4\xcd')
+
+if bytes([65]) != b'A':  # python2
+    # pylint: disable=redefined-builtin, invalid-name
+    class bytes(str):
+        '''
+        fake `bytes` class to make doctests pass
+        '''
+        def __new__(cls, initial=''):
+            if isinstance(initial, list):
+                joined = ''.join(map(chr, initial))
+                return super(bytes, cls).__new__(cls, joined)
+            return super(bytes, cls).__new__(cls, initial)
+        def __repr__(self):
+            return 'b' + super(bytes, self).__repr__()
+        __str__ = __repr__
