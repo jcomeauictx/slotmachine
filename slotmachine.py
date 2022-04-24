@@ -59,7 +59,7 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
                 if len(richlist) == MAX_ADDRESSES:  # watch memory usage
                     logging.info('cutting off at %d addresses', len(richlist))
                     break
-            logging.info('done building richlist')
+            logging.info('done building richlist, %d addresses', len(richlist))
     seed = secret or None  # specifying blank on command line means random seed
     try:
         maxreps = int(maxreps)  # will fail if None
