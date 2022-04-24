@@ -14,10 +14,10 @@ b'USm3fpXnKG5EUBx2ndxBDMPVciP5hGey2Jh4NDv6gmeo1LkMeiKrLJUUBk6Z'
 
 the following test vector is modified from the erroneous original:
 
->>> encode(0x0000287fb4cd.to_bytes(6, 'big'))
+>>> encode(b'\x00\x00\x28\x7f\xb4\xcd')
 b'11233QC4'
 
->>> decode(encode(0x0000287fb4cd.to_bytes(6, 'big')))
+>>> decode(encode(b'\x00\x00\x28\x7f\xb4\xcd'))
 b'\x00\x00(\x7f\xb4\xcd'
 '''
 import logging
@@ -64,4 +64,4 @@ def profile():
     '''
     for use with `make base58.profile`
     '''
-    encode(0x0000287fb4cd.to_bytes(6, 'big'))
+    encode(b'\x00\x00\x28\x7f\xb4\xcd')
