@@ -9,7 +9,7 @@ if you find a winner you can import the privkey into your wallet
 '''
 #pylint: disable=multiple-imports
 from __future__ import print_function
-import sys, os, hashlib, logging
+import sys, os, hashlib, logging, signal
 import ecdsa, base58
 try:
     import secrets
@@ -65,7 +65,7 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
         maxreps = int(maxreps)  # will fail if None
     except TypeError:
         logging.warning('cannot convert %r to integer', maxreps)
-        logging.info('program will run until exited with ^C')
+        logging.info('program will run until exited with ^\\')
         maxreps = sys.maxsize  # continue indefinitely
     try:
         if len(secret) != 64:
@@ -80,6 +80,19 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
             logging.info('creating random secret instead')
             secret = secrets.token_bytes(32)
     old_secret, private, address, reps = None, None, None, 0
+    def alarm_handler(number=None, stack=None):
+        logging.debug('signal number: %s, stack: %s', number, stack)
+        signal.signal(signal.SIGINT, ctrl_c_handler)
+    def ctrl_c_handler(number=None, stack=None):
+        logging.debug('signal number: %s, stack: %s', number, stack)
+        signal.signal(signal.SIGINT, signal.SIG_DFL)  # back to default
+        signal.signal(signal.SIGALRM, alarm_handler)
+        signal.alarm(3)
+        print('\nguesses so far: %d' % reps, file=sys.stderr)
+        print('press ^C again within 3 seconds to terminate', file=sys.stderr)
+    if not __debug__:
+        logging.warning('^C will show how many guesses made so far')
+        alarm_handler()
     while address not in richlist and reps < maxreps:
         logging.debug('secret: %s', hexlify(secret))
         private = wifkey(secret)
