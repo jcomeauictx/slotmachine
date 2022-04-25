@@ -6,15 +6,16 @@ RICHLIST_TXT ?= $(RICHLIST_PATH:.tsv.gz=.txt)
 SCRIPTS := $(wildcard *.py)
 # script uses about 100MB per million addresses, set limit accordingly
 MAX_ADDRESSES ?= 4000000
-# `make OPTIMIZE=-00 run` to get maximum CPU (no wasted screen I/O)
+# `make OPTIMIZE=-OO run` to get maximum CPU (no wasted screen I/O)
 OPTIMIZE ?=
-PYTHON ?= python3 $(OPTIMIZE)
-
+PYTHON := python3 $(OPTIMIZE)
 export
 run:
 	$(MAKE) RICHLIST_TXT= slots
 slots: slotmachine.py $(RICHLIST_TXT)
 	$(PYTHON) $<
+fast:
+	$(MAKE) OPTIMIZE=-OO slots
 %.pylint: %.py
 	pylint3 $<
 %.test:	%.py
