@@ -102,7 +102,7 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
             print('\nguesses so far: %d' % reps, file=sys.stderr)
     try:
         if termios is not None and not __debug__:
-            logging.warning('^T will show how many guesses made so far')
+            logging.info('^T will show how many guesses made so far')
             trap_control_t()
         while address not in richlist and reps < maxreps:
             logging.debug('secret: %s', hexlify(secret))
