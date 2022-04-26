@@ -9,12 +9,16 @@ if you find a winner you can import the privkey into your wallet
 '''
 #pylint: disable=multiple-imports
 from __future__ import print_function
-import sys, os, hashlib, logging, signal, termios
+import sys, os, hashlib, logging
 import ecdsa, base58
 try:
     import secrets
 except ImportError:  # Python3 before 3.6
     import monkeypatch_secrets as secrets
+try:
+    import signal, termios
+except ImportError:
+    signal = termios = None
 if hasattr(bytes, 'hex'):
     #pylint: disable=invalid-name
     hexlify = lambda bytestring: bytestring.hex()
@@ -82,21 +86,22 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
             secret = secrets.token_bytes(32)
     old_secret, private, address, reps = None, None, None, 0
     # trap ^T to show current guess count, overriding ^\ "quit"
-    terminal_attributes = termios.tcgetattr(sys.stdin)
-    quit_character = terminal_attributes[-1][termios.VQUIT]
-    def control(character):
-        if ord(character) >= 0x20:  # space character
-            return chr(ord(character) & 0x1f).encode()
-        return chr(ord(character) | 0x20)
-    def trap_control_t():
-        terminal_attributes[-1][termios.VQUIT] = control('T')
-        termios.tcsetattr(sys.stdin, termios.TCSANOW, terminal_attributes)
-        signal.signal(signal.SIGQUIT, quit_handler)
-    def quit_handler(number=None, stack=None):
-        logging.debug('signal number: %s, stack: %s', number, stack)
-        print('guesses so far: %d' % reps, file=sys.stderr)
+    if termios is not None:
+        terminal_attributes = termios.tcgetattr(sys.stdin)
+        quit_character = terminal_attributes[-1][termios.VQUIT]
+        def control(character):
+            if ord(character) >= 0x20:  # space character
+                return chr(ord(character) & 0x1f).encode()
+            return chr(ord(character) | 0x20)
+        def trap_control_t():
+            terminal_attributes[-1][termios.VQUIT] = control('T')
+            termios.tcsetattr(sys.stdin, termios.TCSANOW, terminal_attributes)
+            signal.signal(signal.SIGQUIT, quit_handler)
+        def quit_handler(number=None, stack=None):
+            logging.debug('signal number: %s, stack: %s', number, stack)
+            print('\nguesses so far: %d' % reps, file=sys.stderr)
     try:
-        if not __debug__:
+        if termios is not None and not __debug__:
             logging.warning('^T will show how many guesses made so far')
             trap_control_t()
         while address not in richlist and reps < maxreps:
@@ -116,10 +121,11 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
             print('address: %s' % address)
             print('reps: %s' % reps)
     finally:
-        logging.info('setting terminal I/O back to defaults')
-        terminal_attributes[-1][termios.VQUIT] = quit_character
-        termios.tcsetattr(sys.stdin, termios.TCSANOW, terminal_attributes)
-        signal.signal(signal.SIGQUIT, signal.SIG_DFL)
+        if termios is not None:
+            logging.info('setting terminal I/O back to defaults')
+            terminal_attributes[-1][termios.VQUIT] = quit_character
+            termios.tcsetattr(sys.stdin, termios.TCSANOW, terminal_attributes)
+            signal.signal(signal.SIGQUIT, signal.SIG_DFL)
 
 def public_key(secret):
     '''
