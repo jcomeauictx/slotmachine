@@ -9,7 +9,7 @@ if you find a winner you can import the privkey into your wallet
 '''
 #pylint: disable=multiple-imports
 from __future__ import print_function
-import sys, os, hashlib, logging, signal
+import sys, os, hashlib, logging, signal, termios
 import ecdsa, base58
 try:
     import secrets
@@ -80,18 +80,28 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
             logging.info('creating random secret instead')
             secret = secrets.token_bytes(32)
     old_secret, private, address, reps = None, None, None, 0
+    # trap ^T to show current guess count
+    terminal_attributes = termios.tcgetattr(sys.stdin)
+    def control(character):
+        if ord(character) >= 0x20:  # space character
+            return chr(ord(character) & 0x1f).encode()
+        else:
+            return chr(ord(character) | 0x20)
     def alarm_handler(number=None, stack=None):
         logging.debug('signal number: %s, stack: %s', number, stack)
-        signal.signal(signal.SIGINT, ctrl_c_handler)
-    def ctrl_c_handler(number=None, stack=None):
+        terminal_attributes[-1][termios.VQUIT] = control('T')
+        termios.tcsetattr(sys.stdin, termios.TCSANOW, terminal_attributes)
+        # VQUIT will change back automatically to ^\ on exit
+        signal.signal(signal.SIGQUIT, quit_handler)
+    def quit_handler(number=None, stack=None):
         logging.debug('signal number: %s, stack: %s', number, stack)
-        signal.signal(signal.SIGINT, signal.SIG_DFL)  # back to default
+        signal.signal(signal.SIGQUIT, signal.SIG_DFL)  # back to default
         signal.signal(signal.SIGALRM, alarm_handler)
         signal.alarm(3)
         print('\nguesses so far: %d' % reps, file=sys.stderr)
-        print('press ^C again within 3 seconds to terminate', file=sys.stderr)
+        print('press ^T again within 3 seconds to quit', file=sys.stderr)
     if not __debug__:
-        logging.warning('^C will show how many guesses made so far')
+        logging.warning('^T will show how many guesses made so far')
         alarm_handler()
     while address not in richlist and reps < maxreps:
         logging.debug('secret: %s', hexlify(secret))
