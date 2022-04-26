@@ -120,6 +120,8 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
             print('private key: %s' % private)
             print('address: %s' % address)
             print('reps: %s' % reps)
+    except KeyboardInterrupt:
+        print('\nexiting, total %d guesses made' % reps, file=sys.stderr)
     finally:
         if termios is not None:
             logging.info('setting terminal I/O back to defaults')
