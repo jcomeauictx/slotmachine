@@ -8,11 +8,12 @@ SCRIPTS := $(wildcard *.py)
 MAX_ADDRESSES ?= 4000000
 # `make OPTIMIZE=-OO run` to get maximum CPU (no wasted screen I/O)
 OPTIMIZE ?=
-PYTHON := python3 $(OPTIMIZE)
+PY_VER ?= 3
+PYTHON := python$(PY_VER) $(OPTIMIZE)
 export
 run:
 	$(MAKE) RICHLIST_TXT= slots
-slots: slotmachine.py $(RICHLIST_TXT)
+slots: slotmachine.py $(RICHLIST_TXT) lint tests
 	$(PYTHON) $<
 fast:
 	$(MAKE) OPTIMIZE=-OO slots

@@ -43,6 +43,7 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
     address: 1Q7f2rL2irjpvsKVys5W2cmKJYss82rNCy
     reps: 1
     '''
+    # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     if not richlist:
         with open(RICHLIST) as infile:
             richlist = []
@@ -65,7 +66,7 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
         maxreps = int(maxreps)  # will fail if None
     except TypeError:
         logging.warning('cannot convert %r to integer', maxreps)
-        logging.info('program will run until exited with ^\\')
+        logging.info('program will run until exited with ^C')
         maxreps = sys.maxsize  # continue indefinitely
     try:
         if len(secret) != 64:
@@ -80,45 +81,45 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
             logging.info('creating random secret instead')
             secret = secrets.token_bytes(32)
     old_secret, private, address, reps = None, None, None, 0
-    # trap ^T to show current guess count
+    # trap ^T to show current guess count, overriding ^\ "quit"
     terminal_attributes = termios.tcgetattr(sys.stdin)
+    quit_character = terminal_attributes[-1][termios.VQUIT]
     def control(character):
         if ord(character) >= 0x20:  # space character
             return chr(ord(character) & 0x1f).encode()
-        else:
-            return chr(ord(character) | 0x20)
-    def alarm_handler(number=None, stack=None):
-        logging.debug('signal number: %s, stack: %s', number, stack)
+        return chr(ord(character) | 0x20)
+    def trap_control_t():
         terminal_attributes[-1][termios.VQUIT] = control('T')
         termios.tcsetattr(sys.stdin, termios.TCSANOW, terminal_attributes)
-        # VQUIT will change back automatically to ^\ on exit
         signal.signal(signal.SIGQUIT, quit_handler)
     def quit_handler(number=None, stack=None):
         logging.debug('signal number: %s, stack: %s', number, stack)
-        signal.signal(signal.SIGQUIT, signal.SIG_DFL)  # back to default
-        signal.signal(signal.SIGALRM, alarm_handler)
-        signal.alarm(3)
-        print('\nguesses so far: %d' % reps, file=sys.stderr)
-        print('press ^T again within 3 seconds to quit', file=sys.stderr)
-    if not __debug__:
-        logging.warning('^T will show how many guesses made so far')
-        alarm_handler()
-    while address not in richlist and reps < maxreps:
-        logging.debug('secret: %s', hexlify(secret))
-        private = wifkey(secret)
-        address = wifaddress(public_key(secret))
-        old_secret = secret
-        # if we aren't starting from a chosen seed, randomize each new try
-        # otherwise keep deriving it from the seed
-        secret = secrets.token_bytes(32) if seed is None else sha256(secret)
-        reps += 1
-    if address in richlist or fake_success:
-        print('JACKPOT!')
-        print('seed: %r' % seed)
-        print('secret: %s' % hexlify(old_secret))
-        print('private key: %s' % private)
-        print('address: %s' % address)
-        print('reps: %s' % reps)
+        print('guesses so far: %d' % reps, file=sys.stderr)
+    try:
+        if not __debug__:
+            logging.warning('^T will show how many guesses made so far')
+            trap_control_t()
+        while address not in richlist and reps < maxreps:
+            logging.debug('secret: %s', hexlify(secret))
+            private = wifkey(secret)
+            address = wifaddress(public_key(secret))
+            old_secret = secret
+            # if we aren't starting from a chosen seed, randomize each new try
+            # otherwise keep deriving it from the seed
+            secret = secrets.token_bytes(32) if seed is None else sha256(secret)
+            reps += 1
+        if address in richlist or fake_success:
+            print('JACKPOT!')
+            print('seed: %r' % seed)
+            print('secret: %s' % hexlify(old_secret))
+            print('private key: %s' % private)
+            print('address: %s' % address)
+            print('reps: %s' % reps)
+    finally:
+        logging.info('setting terminal I/O back to defaults')
+        terminal_attributes[-1][termios.VQUIT] = quit_character
+        termios.tcsetattr(sys.stdin, termios.TCSANOW, terminal_attributes)
+        signal.signal(signal.SIGQUIT, signal.SIG_DFL)
 
 def public_key(secret):
     '''
