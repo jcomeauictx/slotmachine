@@ -11,13 +11,19 @@ if you find a winner you can import the privkey into your wallet
 from __future__ import print_function
 import sys, os, hashlib, logging
 import ecdsa, base58
+logging.basicConfig(
+    level=logging.DEBUG if __debug__ else logging.INFO,
+    format='%(levelname)s:%(message)s'
+)
 try:
     import secrets
 except ImportError:  # Python3 before 3.6
+    logging.info('using monkeypatch to provide `secrets` services')
     import monkeypatch_secrets as secrets
 try:
     import signal, termios
-except ImportError:
+except ImportError as problem:
+    logging.info('cannot make use of ^T status readout: %s', problem)
     signal = termios = None
 if hasattr(bytes, 'hex'):
     #pylint: disable=invalid-name
@@ -26,11 +32,6 @@ else:
     import binascii
     #pylint: disable=invalid-name
     hexlify = lambda bytestring: binascii.hexlify(bytestring).decode()
-
-logging.basicConfig(
-    level=logging.DEBUG if __debug__ else logging.INFO,
-    format='%(levelname)s:%(message)s'
-)
 
 RICHLIST = os.getenv('RICHLIST_TXT') or 'richlist.txt'
 MAX_ADDRESSES = int(os.getenv('MAX_ADDRESSES', '0')) or 4000000
@@ -105,6 +106,7 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
         if termios is not None and not __debug__:
             logging.info('^T will show how many guesses made so far')
             trap_control_t()
+        logging.info('starting guessing secrets, ^C to quit')
         while address not in richlist and reps < maxreps:
             logging.debug('secret: %s', hexlify(secret))
             private = wifkey(secret)
