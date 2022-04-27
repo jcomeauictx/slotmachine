@@ -33,7 +33,8 @@ logging.basicConfig(
 )
 
 RICHLIST = os.getenv('RICHLIST_TXT') or 'richlist.txt'
-MAX_ADDRESSES = int(os.getenv('MAX_ADDRESSES', '4000000')) or 4000000
+MAX_ADDRESSES = int(os.getenv('MAX_ADDRESSES', '0')) or 4000000
+MIN_SATOSHIS = int(os.getenv('MIN_SATOSHIS', '0')) or 10000
 
 def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
     '''
@@ -54,7 +55,7 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
             logging.info('building richlist')
             for line in infile:
                 data = line.split()
-                if len(data) > 1 and int(data[1]) < 1000000:  # satoshis
+                if len(data) > 1 and int(data[1]) < MIN_SATOSHIS:
                     logging.info('cutting off at value %s', data[1])
                     break
                 else:
@@ -122,6 +123,8 @@ def spin(secret=None, richlist=None, maxreps=None, fake_success=False):
             print('reps: %s' % reps)
     except KeyboardInterrupt:
         print('\nexiting, total %d guesses made' % reps, file=sys.stderr)
+        print('total attempts (guesses * %d addresses)): %d' %
+              (len(richlist), reps * len(richlist)), file=sys.stderr)
     finally:
         if termios is not None:
             logging.info('setting terminal I/O back to defaults')
