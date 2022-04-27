@@ -20,7 +20,7 @@ fast:
 %.pylint: %.py
 	pylint3 $<
 %.test:	%.py
-	$(PYTHON) -m doctest $<
+	python$(PY_VER) -m doctest $<
 %.profile: %.py
 	RICHLIST_TXT= python3 -OO -c "import cProfile, $*; \
 	 cProfile.run('$@()')"
