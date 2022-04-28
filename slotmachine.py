@@ -156,9 +156,8 @@ def wifaddress(publickey):
     '''
     return public key hash in Wallet Import Format (WIF)
     '''
-    ripemd160 = hashlib.new('ripemd160')
-    ripemd160.update(sha256(publickey))
-    return wifkey(ripemd160.digest(), b'\x00')
+    hashed = hashlib.new('ripemd160', sha256(publickey)).digest()
+    return wifkey(hashed, b'\x00')
 
 def sha256(data):
     '''
