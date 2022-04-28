@@ -28,10 +28,12 @@ except ImportError as problem:
 if hasattr(bytes, 'hex'):
     #pylint: disable=invalid-name
     hexlify = lambda bytestring: bytestring.hex()
+    unhexlify = bytes.fromhex
 else:
     import binascii
     #pylint: disable=invalid-name
     hexlify = lambda bytestring: binascii.hexlify(bytestring).decode()
+    unhexlify = binascii.unhexlify
 
 RICHLIST = os.getenv('RICHLIST_TXT') or 'richlist.txt'
 MAX_ADDRESSES = int(os.getenv('MAX_ADDRESSES', '0')) or 4000000
@@ -159,9 +161,10 @@ def wifaddress(publickey):
     try:
         hashed = hashlib.new('ripemd160', sha256(publickey)).digest()
     except ValueError:  # assume "unsupported hash type"
-        hashed = subprocess.check_output(
-            'openssl rmd160', input=sha256(publickey)
-        )
+        hashed = unhexlify(subprocess.check_output(
+            'openssl rmd160', input=sha256(publickey), shell=True
+        ).decode().split()[1])
+    logging.debug('hashed: %r', hashed)
     return wifkey(hashed, b'\x00')
 
 def sha256(data):
