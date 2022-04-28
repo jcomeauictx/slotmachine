@@ -47,3 +47,20 @@ stuff it in your knapsack, shut up, and walk on nonchalantly.
 a better source of addresses may be <https://gz.blockchair.com/bitcoin/addresses/blockchair_bitcoin_addresses_latest.tsv.gz>, updated weekly. you can use
 this list automatically by using `make slots` instead of just `make`. it takes
 longer to load, however.
+
+## notes for Windows Vista
+
+may be helpful for other versions of windows as well...
+
+you will need to get ecdsa from the webpage at <https://pypi.org/project/ecdsa/#files>, unless you can get pip installed (I could not). you should be able to
+`tar xvf ecdsa-0.17.0.tar.gz` and `python setup.py` in the resulting directory to install the module.
+
+## notes for Android/Termux
+
+once you fix your sources.list using termux-change-repo to A1batross, you should be able to install python (which is really python3). if you `make PYLINT=echo PY_VER= fast`, you should get through the first few snags, but then it fails on using the ripemd160 hash.
+
+## notes for Debian wheezy
+
+pip doesn't work, or at least I couldn't get it to work: using `--index-url https://pypi.python.org/simple` fails without telling you why, but if you look in `$HOME/.pip/pip.log` you'll see `HTTP Error 403: SNI is required`.
+
+so, you have to fetch both `six` and `ecdsa` from pypi.org with a browser, as mentioned above under Windows Vista, and install them in that order. then it will run using `PY_VER=2 PYLINT=echo make fast`.
