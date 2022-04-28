@@ -63,4 +63,4 @@ once you fix your sources.list using termux-change-repo to A1batross, you should
 
 pip doesn't work, or at least I couldn't get it to work: using `--index-url https://pypi.python.org/simple` fails without telling you why, but if you look in `$HOME/.pip/pip.log` you'll see `HTTP Error 403: SNI is required`.
 
-so, you have to fetch both `six` and `ecdsa` from pypi.org with a browser, as mentioned above under Windows Vista, and install them in that order. then it will run using `PY_VER=2 PYLINT=echo make fast`.
+so, you have to fetch both `six` and `ecdsa` from pypi.org with a browser, as mentioned above under Windows Vista, and install them in that order. then it will run using `make PYLINT=echo PY_VER=2 fast`.
