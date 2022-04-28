@@ -10,6 +10,7 @@ MAX_ADDRESSES ?= 4000000
 OPTIMIZE ?=
 PY_VER ?= 3
 PYTHON := python$(PY_VER) $(OPTIMIZE)
+PYLINT ?= pylint$(PY_VER)
 export
 run:
 	$(MAKE) RICHLIST_TXT= slots
@@ -18,7 +19,7 @@ slots: slotmachine.py $(RICHLIST_TXT) lint tests
 fast:
 	$(MAKE) OPTIMIZE=-OO slots
 %.pylint: %.py
-	pylint3 $<
+	$(PYLINT) $<
 %.test:	%.py
 	python$(PY_VER) -m doctest $<
 %.profile: %.py
