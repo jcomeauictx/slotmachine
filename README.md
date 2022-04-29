@@ -57,7 +57,19 @@ you will need to get ecdsa from the webpage at <https://pypi.org/project/ecdsa/#
 
 ## notes for Android/Termux
 
-once you fix your sources.list using termux-change-repo to A1batross, you should be able to install python (which is really python3). if you `make PYLINT=echo PY_VER= fast`, you should get through the first few snags, but then it fails on using the ripemd160 hash.
+make sure to install Termux using f-droid; the Play Store version is fubar. or
+at least, if you don't want to mess with the Play Store version, run
+`termux-change-repo`, select all sources, and switch to `A1batross`, so you
+have a working repository.
+
+the Termux hashlib doesn't support RIPEMD160 as of this writing. install my
+fork of the [insecure pycrypto module](https://pycrypto.org/) instead using
+`pip install git+https://github.com/jcomeauictx/pycrypto`. if you're wondering
+why I didn't instead use the recommendations on pycrypto's webpage, it's
+because I didn't even look at it until just now updating the README. it was
+easier for me just to add the necessary macro to pycrypto's setup.py.
+
+`make PYLINT=echo fast`
 
 ## notes for Debian wheezy
 
