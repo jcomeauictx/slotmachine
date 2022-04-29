@@ -9,7 +9,7 @@ if you find a winner you can import the privkey into your wallet
 '''
 #pylint: disable=multiple-imports
 from __future__ import print_function
-import sys, os, hashlib, logging, subprocess
+import sys, os, hashlib, logging
 import ecdsa, base58
 logging.basicConfig(
     level=logging.DEBUG if __debug__ else logging.INFO,
@@ -161,9 +161,8 @@ def wifaddress(publickey):
     try:
         hashed = hashlib.new('ripemd160', sha256(publickey)).digest()
     except ValueError:  # assume "unsupported hash type"
-        hashed = unhexlify(subprocess.check_output(
-            'openssl rmd160', input=sha256(publickey), shell=True
-        ).decode().split()[1])
+        from Crypto.Hash import RIPEMD
+        hashed = RIPEMD.new(sha256(publickey)).digest()
     logging.debug('hashed: %r', hashed)
     return wifkey(hashed, b'\x00')
 
