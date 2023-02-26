@@ -28,7 +28,7 @@ fast:
 tests:	$(SCRIPTS:.py=.test)
 profile: $(SCRIPTS:.py=.profile)
 lint:	$(SCRIPTS:.py=.pylint)
-https://gz.blockchair.com/bitcoin/addresses/blockchair_bitcoin_addresses_latest.tsv.gz
+https://gz.blockchair.com/bitcoin/outputs/blockchair_bitcoin_outputs_20130328.tsv.gz
 check: tests lint profile
 env:
 	env
